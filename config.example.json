@@ -1,0 +1,13 @@
+{
+  "database": "/var/lib/mailchannels-ghost/queue.db",
+  "sites": [
+    {
+      "name": "editorial",
+      "origin": "https://publication.example.test",
+      "secrets_hex": [
+        "6578616d706c652d6f6e6c792d7265706c6163652d776974682d33322d72616e646f6d2d6279746573"
+      ],
+      "ledger_key_hex": "6578616d706c652d6c65646765722d7265706c6163652d776974682d72616e646f6d2d6279746573"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+name: Ghost integration validation
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: bash scripts/test.sh
+  ghost:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: [events, routes, failures, failures-default]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: docker pull ghost:6.67.0@sha256:9482099b1c8700764dc3d38c293e09c16d70f8bacc14af589c47d90b4bebd017
+      - run: docker build -t visibility-ghost-receiver:test -f native/Dockerfile .
+      - run: python native/run.py '${{ matrix.scenario }}'
