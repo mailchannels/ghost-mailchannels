@@ -75,3 +75,10 @@ source or a future forum post does not establish official directory inclusion. N
 partner message has been sent. See [publisher handoff](docs/PUBLISHING.md).
 
 MIT license. Maintained by MailChannels; support: dev@mailchannels.com.
+
+
+Restoring a backup requires stopped services and snapshot-gap reconciliation. The bounded
+[`quarantine.py`](quarantine.py) command prevents existing restored queued receipts from resending
+and records a separate audit; it cannot reconstruct missing post-snapshot receipts. Follow the
+[restore quarantine runbook](OPERATIONS.md#quarantine-restored-queued-receipts-before-gap-reconciliation)
+before considering resumption. No release or production-recovery approval is implied.
