@@ -64,7 +64,8 @@ class Quarantine(unittest.TestCase):
                            (site,f'{i:064x}','hash','Private','https://private.test',state,1))
         self.assertEqual(self.quarantine(limit=1)['remaining_queued'],1)
         self.assertEqual(self.quarantine(limit=1)['remaining_queued'],0)
-        self.assertEqual(self.quarantine()['quarantined'],0)
+        repeated=self.quarantine()
+        self.assertEqual((repeated['quarantined'],repeated['queued_by_site']),(0,{'other':1}))
         self.assertEqual(inspect(self.path,'other')['counts']['queued'],1)
         self.assertEqual(inspect(self.path,SITE.name)['counts'],dict(queued=0,pending=3,accepted=1,rejected=1))
         with closing(self.queue.connect()) as db:

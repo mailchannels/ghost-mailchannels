@@ -42,7 +42,9 @@ def quarantine(database, site, actor, evidence_reference, *, limit=100, confirme
                 if changed != 1:
                     raise RuntimeError('Receipt changed during quarantine')
             remaining = db.execute("SELECT count(*) FROM jobs WHERE site=? AND state='queued'", (site,)).fetchone()[0]
+            queued_by_site = dict(db.execute("SELECT site,count(*) FROM jobs WHERE state='queued' GROUP BY site"))
             result = {'site': site, 'quarantined': len(keys), 'remaining_queued': remaining,
+                      'queued_by_site': queued_by_site,
                       'meaning': 'Snapshot outcomes unknown; keep services stopped until gap reconciliation'}
     return result
 

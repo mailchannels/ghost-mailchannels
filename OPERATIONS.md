@@ -233,9 +233,10 @@ python quarantine.py --database /private/restore/queue.db --site editorial \
 
 This command moves at most100 queued receipts (configurable1–500) to pending in one transaction,
 with a per-receipt restore audit. Repeat until `remaining_queued` is zero for every site being
-restored. It preserves original content, identity and attempt metadata; it does not invent an
-attempt or provider outcome. Pending here means the snapshot outcome needs investigation, not
-that this process tried to send. Existing pending/accepted/rejected receipts and other sites are
+restored; `queued_by_site` counts queued receipts across every site in the database, so only an
+empty object shows that no site was missed. It preserves original content, identity and attempt
+metadata; it does not invent an attempt or provider outcome. Pending here means the snapshot
+outcome needs investigation, not that this process tried to send. Existing pending/accepted/rejected receipts and other sites are
 untouched. Repeating a finished batch changes no rows. An unknown or empty site is refused so a
 mistyped site does not look like completed recovery; verify genuinely empty sites independently.
 
