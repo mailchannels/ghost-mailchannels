@@ -231,7 +231,7 @@ python quarantine.py --database /private/restore/queue.db --site editorial \
   --limit 100 --confirm-services-stopped
 ```
 
-This command moves at most100 queued receipts (configurable1–500) to pending in one transaction,
+This command moves at most 100 queued receipts (configurable 1–500) to pending in one transaction,
 with a per-receipt restore audit. Repeat until `remaining_queued` is zero for every site being
 restored; `queued_by_site` counts queued receipts across every site in the database, so only an
 empty object shows that no site was missed. It preserves original content, identity and attempt

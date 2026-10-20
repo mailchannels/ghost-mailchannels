@@ -261,8 +261,8 @@ before use. Unknown outcomes stay pending; no production recovery or provider ac
 
 ### Restored-queue quarantine
 
-The suite now includes seven restore-quarantine tests, bringing the total to76. A real SQLite
-snapshot is taken before a mocked202 acceptance, restored to a separate file, quarantined and
+The suite now includes seven restore-quarantine tests, bringing the total to 76. A real SQLite
+snapshot is taken before a mocked 202 acceptance, restored to a separate file, quarantined and
 checked against the actual worker selection path: no resend occurs. Replay remains a duplicate,
 unknown attempt fields remain null, and quarantine plus later operator-resolution audits survive
 another backup. Tests cover bounded site-scoped batches, unchanged terminal states, repeated runs,
