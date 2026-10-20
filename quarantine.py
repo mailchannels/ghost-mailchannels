@@ -28,22 +28,16 @@ def quarantine(database, site, actor, evidence_reference, *, limit=100, confirme
             db.execute('BEGIN IMMEDIATE')
             if not db.execute('SELECT 1 FROM jobs WHERE site=? LIMIT 1', (site,)).fetchone():
                 raise ValueError('Site has no receipts; verify recovery scope')
-            keys = [row[0] for row in db.execute(
-                "SELECT event_key FROM jobs WHERE site=? AND state='queued' ORDER BY event_key LIMIT ?",
-                (site, limit))]
             db.execute(AUDIT_SCHEMA)
-            now = int(time.time())
-            for key in keys:
-                db.execute('''INSERT INTO restore_quarantines
-                    (site,event_key,quarantined_at,actor,evidence_reference) VALUES(?,?,?,?,?)''',
-                    (site,key,now,actor,evidence_reference))
-                changed = db.execute("UPDATE jobs SET state='pending' WHERE site=? AND event_key=? AND state='queued'",
-                                     (site,key)).rowcount
-                if changed != 1:
-                    raise RuntimeError('Receipt changed during quarantine')
+            db.execute('''INSERT INTO restore_quarantines
+                (site,event_key,quarantined_at,actor,evidence_reference)
+                SELECT site,event_key,?,?,? FROM jobs WHERE site=? AND state='queued' ORDER BY event_key LIMIT ?''',
+                (int(time.time()), actor, evidence_reference, site, limit))
+            quarantined = db.execute('''UPDATE jobs SET state='pending' WHERE site=? AND state='queued'
+                AND event_key IN (SELECT event_key FROM restore_quarantines WHERE site=?)''', (site, site)).rowcount
             remaining = db.execute("SELECT count(*) FROM jobs WHERE site=? AND state='queued'", (site,)).fetchone()[0]
             queued_by_site = dict(db.execute("SELECT site,count(*) FROM jobs WHERE state='queued' GROUP BY site"))
-            result = {'site': site, 'quarantined': len(keys), 'remaining_queued': remaining,
+            result = {'site': site, 'quarantined': quarantined, 'remaining_queued': remaining,
                       'queued_by_site': queued_by_site,
                       'meaning': 'Snapshot outcomes unknown; keep services stopped until gap reconciliation'}
     return result
