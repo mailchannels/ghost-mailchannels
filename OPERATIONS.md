@@ -131,7 +131,8 @@ ledger key cannot preserve callback deduplication.
 3. Run `python receipts.py --database /private/restore/queue.db --site editorial` against the copy.
    Compare counts and, in a controlled environment, the needed receipt details to the backup record.
    Do not invoke `worker.py` as a validation step: it can send queued notifications.
-4. Reconcile the snapshot gap using retained current receipts and authorized provider/operator records.
+4. Quarantine restored queued receipts using the bounded command below, then reconcile the snapshot
+   gap using retained current receipts and authorized provider/operator records.
    A row that was queued at backup time may have been accepted after the snapshot. A later event may
    be absent entirely. An intact restored database does not resolve either case. Keep workers stopped
    whenever the outcome is uncertain. No automated merge, requeue or production restore is provided.
@@ -217,3 +218,48 @@ with unverified locking semantics. This implementation targets Unix/Linux; Windo
 Resolving a receipt is not snapshot-gap reconciliation or missed-event recovery, and cannot establish
 whether an older restored queued row was already sent. Company evidence access, operator ownership,
 retention, deployment and real-provider acceptance remain required before production operation.
+
+## Quarantine restored queued receipts before gap reconciliation
+
+On an isolated restored copy, a row marked queued may already have been sent after the snapshot.
+With **receiver, schedulers and all workers stopped**, use the following command for each known site
+in the database. Retain the original snapshot unchanged and its checksum in protected storage.
+
+```sh
+python quarantine.py --database /private/restore/queue.db --site editorial \
+  --actor operator-id --evidence-reference RESTORE-123 \
+  --limit 100 --confirm-services-stopped
+```
+
+This command moves at most 100 queued receipts (configurable 1–500) to pending in one transaction,
+with a per-receipt restore audit. Repeat until `remaining_queued` is zero for every site being
+restored; `queued_by_site` counts queued receipts across every site in the database, so only an
+empty object shows that no site was missed. It preserves original content, identity and attempt
+metadata; it does not invent an attempt or provider outcome. Pending here means the snapshot
+outcome needs investigation, not that this process tried to send. Existing pending/accepted/rejected receipts and other sites are
+untouched. Repeating a finished batch changes no rows. An unknown or empty site is refused so a
+mistyped site does not look like completed recovery; verify genuinely empty sites independently.
+
+The command takes the same exclusive advisory lock as manual resolution, so cooperating active
+workers block it. It also uses a SQLite write transaction for atomic state/audit changes. This lock
+does not stop receiver intake and is released between batches. The confirmation flag is an operator
+attestation, not automatic proof that services stopped. Keep all services stopped throughout the
+entire restore and reconciliation procedure, including between invocations. Never use an older
+worker, another copy of the database or a hard-linked alias to bypass these constraints.
+
+Read-only diagnostics expose `restore_quarantine` with audit ID/time. Actor and evidence reference
+are shown only with `--include-content`. Backups preserve this audit. After conclusive provider
+investigation, `recover.py` may resolve the pending outcome and adds a separate resolution audit;
+it never resends. No automatic unquarantine or requeue operation exists. If evidence remains
+inconclusive, keep the receipt pending and apply the company's missed-notification policy.
+
+**Zero remaining queued rows is not permission to resume.** Events first received after the backup
+are absent from the copy; a replay can create a new queued receipt even after quarantine. Independently
+recover/reconcile the missing receipt history and retained provider evidence before reopening intake
+or workers. Current Ghost post snapshots are not a complete event history. The tool does not merge
+ledgers or make an older snapshot current. Record an explicit company recovery decision for unresolved
+history. Quarantine protects only existing restored rows; it does not establish lossless recovery.
+
+Audit failure rolls back the complete batch. After interruption or nonzero exit, inspect state/audits
+before repeating: a commit may have completed before output. Trusted administrators can modify these
+SQLite records; retain the external evidence separately. This is not tamper-proof audit storage.

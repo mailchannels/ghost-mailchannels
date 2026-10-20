@@ -257,3 +257,16 @@ has confirmed the exact provider outcome and supplied attribution/evidence refer
 audit record atomically, never sends/requeues, and excludes updated workers using Unix advisory locks.
 Read [the required operating procedure](../OPERATIONS.md#resolve-a-conclusively-investigated-pending-receipt)
 before use. Unknown outcomes stay pending; no production recovery or provider access is automated.
+
+
+### Restored-queue quarantine
+
+The suite now includes seven restore-quarantine tests, bringing the total to 76. A real SQLite
+snapshot is taken before a mocked 202 acceptance, restored to a separate file, quarantined and
+checked against the actual worker selection path: no resend occurs. Replay remains a duplicate,
+unknown attempt fields remain null, and quarantine plus later operator-resolution audits survive
+another backup. Tests cover bounded site-scoped batches, unchanged terminal states, repeated runs,
+state/audit failure rollback, invalid input, missing files, cross-process worker locks and CLI output.
+A separate test explicitly demonstrates the limitation: a post-snapshot event absent from the backup
+can still enqueue after reopening intake. Company recovery must resolve that missing history first.
+All provider behavior in these tests is local/mocked; no live send or deployment is established.
