@@ -43,25 +43,16 @@ def inspect(database, site, *, limit=50, after=None, include_content=False):
         for receipt in receipts:
             if receipt.get('attempt_recipients') is not None:
                 receipt['attempt_recipients'] = json.loads(receipt['attempt_recipients'])
-        if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='resolutions'").fetchone():
-            audit_columns = ['id', 'resolved_at', 'outcome']
+        for table, key, audit_columns in (('resolutions', 'operator_resolution', ['id', 'resolved_at', 'outcome']),
+                                          ('restore_quarantines', 'restore_quarantine', ['id', 'quarantined_at'])):
+            if not db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (table,)).fetchone():
+                continue
             if include_content:
                 audit_columns += ['actor', 'evidence_reference']
             for receipt in receipts:
-                audit = db.execute('SELECT ' + ','.join(audit_columns) +
-                                   ' FROM resolutions WHERE site=? AND event_key=?',
+                audit = db.execute('SELECT ' + ','.join(audit_columns) + f' FROM {table} WHERE site=? AND event_key=?',
                                    (site, receipt['event_key'])).fetchone()
-                receipt['operator_resolution'] = dict(zip(audit_columns, audit)) if audit else None
-
-        if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='restore_quarantines'").fetchone():
-            audit_columns = ['id', 'quarantined_at']
-            if include_content:
-                audit_columns += ['actor', 'evidence_reference']
-            for receipt in receipts:
-                audit = db.execute('SELECT ' + ','.join(audit_columns) +
-                                   ' FROM restore_quarantines WHERE site=? AND event_key=?',
-                                   (site, receipt['event_key'])).fetchone()
-                receipt['restore_quarantine'] = dict(zip(audit_columns, audit)) if audit else None
+                receipt[key] = dict(zip(audit_columns, audit)) if audit else None
 
     return {'site': site, 'observed_at': int(time.time()), 'counts': counts,
             'total_receipts': sum(counts.values()), 'oldest_intake_at_by_state': oldest,
