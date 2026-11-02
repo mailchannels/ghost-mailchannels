@@ -1,11 +1,17 @@
 # MailChannels editorial notifications for Ghost
 
 **Unreleased development preview. Not deployed, listed in the Ghost integration directory,
-or validated against a live MailChannels account.** Support: dev@mailchannels.com.
+or validated against a live MailChannels account.**
 
 Receive signed Ghost `post.published` webhooks and queue a minimal title/link notification
 for an internal editorial team. This external Python service does not replace Ghost newsletters
 or their provider requirements. It does not send to subscribers or implement bulk campaigns.
+
+## Support
+
+This project is supported by the MailChannels team on a best-effort basis. The best way to get support is to file an issue on GitHub: https://github.com/mailchannels/ghost-mailchannels/issues
+
+If you are a MailChannels customer and have a problem with the operation of the MailChannels service, you can get support at https://support.mailchannels.com/
 
 ## What works locally
 
@@ -74,7 +80,7 @@ Ghost's integration directory is curated and closed to submissions at preparatio
 source or a future forum post does not establish official directory inclusion. No forum post or
 partner message has been sent. See [publisher handoff](docs/PUBLISHING.md).
 
-MIT license. Maintained by MailChannels; support: dev@mailchannels.com.
+MIT license. Maintained by MailChannels.
 
 
 Restoring a backup requires stopped services and snapshot-gap reconciliation. The bounded
