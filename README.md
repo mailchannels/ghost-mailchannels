@@ -7,6 +7,15 @@ Receive signed Ghost `post.published` webhooks and queue a minimal title/link no
 for an internal editorial team. This external Python service does not replace Ghost newsletters
 or their provider requirements. It does not send to subscribers or implement bulk campaigns.
 
+## Hosted version
+
+MailChannels is moving the hosted version of this integration onto its shared integration service,
+which receives the same signed `post.published` webhooks at `/ghost/hooks/{connection}` and sends each
+post version once through the MailChannels Email API. Sites will connect there with their MailChannels
+API key instead of running this service. That hosted version is in review and not yet available. This
+repository remains the reference implementation and its rules (signature checks, site isolation,
+deduplication, no automatic resends) carry over unchanged.
+
 ## Support
 
 This project is supported by the MailChannels team on a best-effort basis. The best way to get support is to file an issue on GitHub: https://github.com/mailchannels/ghost-mailchannels/issues
