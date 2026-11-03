@@ -9,4 +9,5 @@ Preserve commit-before-ACK and claim-before-send, fixed HTTPS/no redirects, serv
 site isolation, no automatic replay of uncertain sends, and atomic audited operator resolution.
 Changes to receipt identity, schema, lifecycle or locks require upgrade/backup/recovery review.
 Document claims narrowly: native/local tests do not establish live delivery or hosted plan support.
-There is no automated publishing/deployment job. Support: dev@mailchannels.com.
+There is no automated publishing/deployment job. Support details and issue reporting are in the
+[README Support section](README.md#support).

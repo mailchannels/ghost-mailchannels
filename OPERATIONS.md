@@ -1,8 +1,9 @@
 # Ghost editorial notification operations
 
-This candidate has no company deployment or public release yet. Support contact is
-dev@mailchannels.com; a named operator, hosting, monitoring and missed-event policy still need
-assignment. These procedures describe the implemented local queue and its limits.
+This candidate has no company deployment or public release yet. Support details and issue
+reporting are in the [README Support section](README.md#support); a named operator, hosting,
+monitoring and missed-event policy still need assignment. These procedures describe the implemented
+local queue and its limits.
 
 ## Inspect receipts
 

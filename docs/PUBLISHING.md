@@ -1,7 +1,8 @@
 # Company setup and publication handoff
 
 Unreleased development preview; no company deployment, release tag, Ghost directory listing or
-live MailChannels validation. Support is dev@mailchannels.com. A named operator is still needed.
+live MailChannels validation. Support details and issue reporting are in the
+[README Support section](../README.md#support). A named operator is still needed.
 Assume no existing Ghost test publication or company forum account.
 
 1. Establish a company-controlled Ghost test publication and forum identity. For a hosted plan,

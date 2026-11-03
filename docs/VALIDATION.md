@@ -2,7 +2,10 @@
 
 This is the initial signed intake and durable queue component for an external `post.published`
 editorial notification integration. It does not replace Ghost newsletters, which retain their native
-provider requirements. An ASGI HTTP receiver is implemented. A one-shot sending worker is also implemented. **There is no deployment or published directory integration yet.** Support contact: dev@mailchannels.com. Company publication and forum account setup are pending.
+provider requirements. An ASGI HTTP receiver is implemented. A one-shot sending worker is also
+implemented. **There is no deployment or published directory integration yet.** Support details and
+issue reporting are in the [README Support section](../README.md#support). Company publication and
+forum account setup are pending.
 
 `Site` is trusted server configuration: a connection ID, exact HTTPS origin, one or more webhook
 signing secrets (minimum32 bytes) and a separate stable receipt HMAC key. Map requests to this
